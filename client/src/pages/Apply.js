@@ -8,6 +8,7 @@ import Button from '../components/ui/Button';
 
 const Wrapper = styled.div`
   padding: ${({ theme }) => theme.spacing['3xl']} 0;
+  padding-top: 120px;
   text-align: center;
 `;
 
@@ -41,8 +42,14 @@ const RoleCard = styled(Card)`
 `;
 
 const RoleIcon = styled.div`
-  font-size: 2.5rem;
+  display: flex;
+  justify-content: center;
   margin-bottom: ${({ theme }) => theme.spacing.md};
+
+  img {
+    width: 64px;
+    height: 64px;
+  }
 `;
 
 const RoleTitle = styled.h3`
@@ -64,11 +71,11 @@ const Apply = () => {
       <Header />
       <Container>
         <Wrapper>
-          <Title>Join HotelCollab</Title>
+          <Title>Join Influspark</Title>
           <Subtitle>Choose how you want to use the platform</Subtitle>
           <RoleGrid>
             <RoleCard $color="#14B8A6" onClick={() => navigate('/apply/hotel-owner')}>
-              <RoleIcon>&#127976;</RoleIcon>
+              <RoleIcon><img src="/Hotel.svg" alt="Hotel" /></RoleIcon>
               <RoleTitle>Hotel Owner</RoleTitle>
               <RoleDesc>
                 List your properties and find influencers for content collaborations.
@@ -78,12 +85,12 @@ const Apply = () => {
               </Button>
             </RoleCard>
             <RoleCard $color="#6366F1" onClick={() => navigate('/apply/influencer')}>
-              <RoleIcon>&#127908;</RoleIcon>
+              <RoleIcon><img src="/Influncer.svg" alt="Influencer" /></RoleIcon>
               <RoleTitle>Influencer</RoleTitle>
               <RoleDesc>
                 Connect your social accounts and discover hotel collaboration offers.
               </RoleDesc>
-              <Button $variant="secondary" $fullWidth>
+              <Button $variant="ghost" $fullWidth>
                 Apply as Influencer
               </Button>
             </RoleCard>

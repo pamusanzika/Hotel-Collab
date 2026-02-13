@@ -1,4 +1,4 @@
-# HotelCollab — Hotel-Influencer Platform
+# Influspark — Hotel-Influencer Platform
 
 A full-stack web application that connects hotel owners with social media influencers for marketing collaborations. Hotel owners list their properties and influencers link their social media accounts (YouTube, Instagram, TikTok) to find partnership opportunities.
 
@@ -26,7 +26,7 @@ A full-stack web application that connects hotel owners with social media influe
 
 ## Project Overview
 
-**HotelCollab** is a role-based platform with three user types:
+**Influspark** is a role-based platform with three user types:
 
 | Role | Description |
 |------|-------------|
@@ -785,7 +785,7 @@ Status pill with variants: `active` (green), `banned` (red), `pending` (yellow),
 
 | Script | File | Description |
 |--------|------|-------------|
-| `seedAdmin` | scripts/seedAdmin.js | Creates admin user if not exists (email: `admin@hotelcollab.dev`, password: `admin12345`) |
+| `seedAdmin` | scripts/seedAdmin.js | Creates admin user if not exists (email: `admin@influspark.dev`, password: `admin12345`) |
 
 ---
 
@@ -851,7 +851,7 @@ JWT_REFRESH_EXPIRES=7d                       # Refresh token lifetime
 CLIENT_URL=http://localhost:3000             # Frontend URL (for CORS + email links)
 
 # Email
-EMAIL_FROM=noreply@hotelcollab.dev           # Sender address for emails
+EMAIL_FROM=noreply@influspark.dev           # Sender address for emails
 
 # OAuth — leave empty to use mock adapters
 GOOGLE_CLIENT_ID=                            # Google/YouTube OAuth client ID
@@ -912,7 +912,7 @@ npm start
 ```bash
 cd server
 npm run seed:admin
-# Creates admin@hotelcollab.dev with password admin12345
+# Creates admin@influspark.dev with password admin12345
 ```
 
 ### Production Build

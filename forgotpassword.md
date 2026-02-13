@@ -95,7 +95,7 @@ EMAIL_FROM=yourgmail@gmail.com
 1. Go to [Google Account Security](https://myaccount.google.com/security)
 2. Enable **2-Step Verification**
 3. Go to [App Passwords](https://myaccount.google.com/apppasswords)
-4. Create a new app password (e.g. name it "HotelCollab")
+4. Create a new app password (e.g. name it "Influspark")
 5. Copy the 16-character code (without spaces)
 6. Use it as `SMTP_PASS`
 

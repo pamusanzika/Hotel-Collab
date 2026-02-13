@@ -21,9 +21,9 @@ const Content = styled.main`
   padding: ${({ theme }) => theme.spacing.xl};
 `;
 
-const DashboardLayout = ({ logoText, navItems }) => (
+const DashboardLayout = ({ logoText, logoSrc, navItems }) => (
   <LayoutWrapper>
-    <Sidebar logoText={logoText} items={navItems} />
+    <Sidebar logoText={logoText} logoSrc={logoSrc} items={navItems} />
     <MainArea>
       <Topbar />
       <Content>

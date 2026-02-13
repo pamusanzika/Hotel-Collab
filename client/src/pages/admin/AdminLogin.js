@@ -73,7 +73,7 @@ const AdminLogin = () => {
     <Wrapper>
       <Container $maxWidth="440px">
         <FormCard $padding="2.5rem">
-          <Logo>HotelCollab</Logo>
+          <Logo>Influspark</Logo>
           <Title>Admin Panel</Title>
           <Form onSubmit={onSubmit}>
             <InputWrapper>
@@ -83,7 +83,7 @@ const AdminLogin = () => {
                 type="email"
                 value={form.email}
                 onChange={onChange}
-                placeholder="admin@hotelcollab.dev"
+                placeholder="admin@influspark.dev"
                 required
               />
             </InputWrapper>

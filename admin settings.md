@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Admin Settings feature allows existing administrators to manage other admins on the HotelCollab platform. Admins can invite new admins by email, view all current admins, remove admins, and track pending invitations.
+The Admin Settings feature allows existing administrators to manage other admins on the Influspark platform. Admins can invite new admins by email, view all current admins, remove admins, and track pending invitations.
 
 ---
 
@@ -137,7 +137,7 @@ These schemas are used with the `validate()` middleware in the routes, which ret
 3. Creates an `AdminInviteToken` document with 48-hour expiry
 4. Constructs the setup URL: `{CLIENT_URL}/admin/setup-password?token={token}`
 5. Sends an HTML email with:
-   - Subject: "You have been invited as an Admin - HotelCollab"
+   - Subject: "You have been invited as an Admin - Influspark"
    - Body: Greeting, explanation, teal-colored CTA button linking to the setup URL
    - Fallback text link for email clients that don't render HTML
 6. In development mode (no SMTP configured), logs the setup URL to the console with `[DEV]` prefix

@@ -9,7 +9,7 @@ const theme = {
     accent: '#FB7185',
     accentLight: '#FDA4AF',
     accentDark: '#F43F5E',
-    background: '#F9FAFB',
+    background: '#ffffff',
     surface: '#FFFFFF',
     text: '#1F2937',
     textSecondary: '#6B7280',
@@ -19,6 +19,8 @@ const theme = {
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
+    Black: '#000000',
+    White: '#FFFFFF',
   },
 
   typography: {
@@ -32,6 +34,8 @@ const theme = {
       '2xl': '1.5rem',  // 24px
       '3xl': '1.875rem', // 30px
       '4xl': '2.25rem', // 36px
+      '5xl': '3rem',    // 48px
+      '6xl': '3.75rem', // 60px
     },
     fontWeight: {
       regular: 400,

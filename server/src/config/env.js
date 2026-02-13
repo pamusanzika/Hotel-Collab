@@ -9,7 +9,7 @@ module.exports = {
   JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES || '7d',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
   SERVER_URL: process.env.SERVER_URL || 'http://localhost:5001',
-  EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@hotelcollab.dev',
+  EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@influspark.dev',
   SMTP_HOST: process.env.SMTP_HOST || 'smtp.gmail.com',
   SMTP_PORT: parseInt(process.env.SMTP_PORT, 10) || 587,
   SMTP_USER: process.env.SMTP_USER || '',

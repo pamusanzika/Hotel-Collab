@@ -20,6 +20,8 @@ import ApplyInfluencer from './pages/ApplyInfluencer';
 import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
 
 // Owner pages
 import OwnerDashboard from './pages/owner/OwnerDashboard';
@@ -94,7 +96,7 @@ const OwnerLayout = () => {
     { to: '/owner/collaborations', label: 'Collaborations', badge: pendingCampaigns },
     { to: '/owner/settings', label: 'Settings' },
   ];
-  return <DashboardLayout logoText="HotelCollab" navItems={navItems} />;
+  return <DashboardLayout logoSrc="/logo-3.svg" logoText="Influspark" navItems={navItems} />;
 };
 
 const InfluencerLayout = () => {
@@ -108,7 +110,7 @@ const InfluencerLayout = () => {
     { to: '/influencer/campaigns', label: 'Campaigns', badge: pendingCampaigns },
     { to: '/influencer/settings', label: 'Settings' },
   ];
-  return <DashboardLayout logoText="HotelCollab" navItems={navItems} />;
+  return <DashboardLayout logoSrc="/logo-3.svg" logoText="Influspark" navItems={navItems} />;
 };
 
 const App = () => (
@@ -127,6 +129,8 @@ const App = () => (
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
             <Route path="/admin/setup-password" element={<AdminSetupPassword />} />
 
             {/* Hotel Owner Dashboard */}
@@ -181,7 +185,7 @@ const App = () => (
               path="/admin"
               element={
                 <ProtectedRoute role="admin">
-                  <DashboardLayout logoText="Admin Panel" navItems={adminNav} />
+                  <DashboardLayout logoSrc="/logo-3.svg" logoText="Admin Panel" navItems={adminNav} />
                 </ProtectedRoute>
               }
             >

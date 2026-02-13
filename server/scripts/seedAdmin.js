@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 const { MONGO_URI } = require('../src/config/env');
 const User = require('../src/models/User');
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hotelcollab.dev';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@influspark.dev';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Pamuda2003';
 const ADMIN_NAME = 'Platform Admin';
 

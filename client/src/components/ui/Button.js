@@ -2,24 +2,31 @@ import styled, { css } from 'styled-components';
 
 const variants = {
   primary: css`
-    background: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.text};
     color: #fff;
-    &:hover { background: ${({ theme }) => theme.colors.primaryDark}; }
+    backdrop-filter: blur(10px);
+    border: 1px solid ${({ theme }) => theme.colors.text};
+    &:hover { background: ${({ theme }) => theme.colors.Black}; }
   `,
   secondary: css`
     background: ${({ theme }) => theme.colors.secondary};
     color: #fff;
+    backdrop-filter: blur(70px);
+    border: 1px solid ${({ theme }) => theme.colors.secondary};
     &:hover { background: ${({ theme }) => theme.colors.secondaryDark}; }
   `,
   ghost: css`
     background: transparent;
     color: ${({ theme }) => theme.colors.text};
-    border: 1px solid ${({ theme }) => theme.colors.border};
-    &:hover { background: ${({ theme }) => theme.colors.borderLight}; }
+    border: 1px solid ${({ theme }) => theme.colors.Black};
+    backdrop-filter: blur(10px);
+    &:hover { background: ${({ theme }) => theme.colors.White}; }
   `,
   danger: css`
     background: ${({ theme }) => theme.colors.accent};
     color: #fff;
+    backdrop-filter: blur(10px);
+    border: 1px solid ${({ theme }) => theme.colors.accent};
     &:hover { background: ${({ theme }) => theme.colors.accentDark}; }
   `,
 };
@@ -45,7 +52,7 @@ const Button = styled.button`
   justify-content: center;
   gap: 0.5rem;
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.full};
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;

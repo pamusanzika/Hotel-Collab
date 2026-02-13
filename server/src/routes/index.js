@@ -10,6 +10,7 @@ const chatRoutes = require('./chat');
 const ownerProfileRoutes = require('./ownerProfile');
 const campaignRoutes = require('./campaigns');
 const reviewRoutes = require('./reviews');
+const contactRoutes = require('./contact');
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.use('/influencer-listing', influencerListingRoutes);
 router.use('/chat', chatRoutes);
 router.use('/campaigns', campaignRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/contact', contactRoutes);
 
 // Health check
 router.get('/health', (req, res) => res.json({ status: 'ok' }));

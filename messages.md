@@ -631,7 +631,7 @@ const OwnerLayout = () => {
     { to: '/owner/messages', label: 'Messages', badge: unreadCount },
     // ...
   ];
-  return <DashboardLayout logoText="HotelCollab" navItems={navItems} />;
+  return <DashboardLayout logoText="Influspark" navItems={navItems} />;
 };
 ```
 

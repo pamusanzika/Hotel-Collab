@@ -11,6 +11,7 @@ import api from '../api/axios';
 const FormWrapper = styled.div`
   max-width: 440px;
   margin: ${({ theme }) => theme.spacing['2xl']} auto;
+  padding-top: 100px;
 `;
 
 const Title = styled.h2`

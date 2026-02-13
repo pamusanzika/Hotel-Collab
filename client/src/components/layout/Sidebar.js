@@ -21,6 +21,13 @@ const Logo = styled.div`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.primary};
   border-bottom: 1px solid ${({ theme }) => theme.colors.borderLight};
+  display: flex;
+  align-items: center;
+
+  img {
+    height: 60px;
+    width: auto;
+  }
 `;
 
 const Nav = styled.nav`
@@ -69,9 +76,11 @@ const NavBadge = styled.span`
   margin-left: auto;
 `;
 
-const Sidebar = ({ logoText, items }) => (
+const Sidebar = ({ logoText, logoSrc, items }) => (
   <SidebarWrapper>
-    <Logo>{logoText}</Logo>
+    <Logo>
+      {logoSrc ? <img src={logoSrc} alt={logoText || 'Logo'} /> : logoText}
+    </Logo>
     <Nav>
       {items.map((item) => (
         <StyledNavLink key={item.to} to={item.to} end={item.end}>

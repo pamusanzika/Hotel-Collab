@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Hotel Listing feature allows hotel owners to create, edit, preview, and manage their hotel listings within the HotelCollab platform. It replaces the original simple modal-based form with a full-page, multi-section form that supports image uploads, collaboration type selection, availability scheduling, and a preview-before-submit flow.
+The Hotel Listing feature allows hotel owners to create, edit, preview, and manage their hotel listings within the Influspark platform. It replaces the original simple modal-based form with a full-page, multi-section form that supports image uploads, collaboration type selection, availability scheduling, and a preview-before-submit flow.
 
 ---
 

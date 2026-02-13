@@ -21,7 +21,7 @@ if (SMTP_USER && SMTP_PASS) {
 
 const sendMail = async ({ to, subject, html }) => {
   if (transporter) {
-    await transporter.sendMail({ from: `HotelCollab <${EMAIL_FROM}>`, to, subject, html });
+    await transporter.sendMail({ from: `Influspark <${EMAIL_FROM}>`, to, subject, html });
   } else {
     console.log(`[DEV] Email to ${to} | Subject: ${subject}`);
   }
@@ -44,9 +44,9 @@ const sendVerificationEmail = async (user) => {
 
   await sendMail({
     to: user.email,
-    subject: 'Verify your email - HotelCollab',
+    subject: 'Verify your email - Influspark',
     html: `
-      <h2>Welcome to HotelCollab!</h2>
+      <h2>Welcome to Influspark!</h2>
       <p>Hi ${user.name},</p>
       <p>Please verify your email address by clicking the link below:</p>
       <p><a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#14B8A6;color:#fff;text-decoration:none;border-radius:6px;">Verify Email</a></p>
@@ -82,7 +82,7 @@ const sendPasswordResetEmail = async (user) => {
 
   await sendMail({
     to: user.email,
-    subject: 'Reset your password - HotelCollab',
+    subject: 'Reset your password - Influspark',
     html: `
       <h2>Password Reset</h2>
       <p>Hi ${user.name},</p>
@@ -121,11 +121,11 @@ const sendAdminInviteEmail = async (user, invitedByUserId) => {
 
   await sendMail({
     to: user.email,
-    subject: 'You have been invited as an Admin - HotelCollab',
+    subject: 'You have been invited as an Admin - Influspark',
     html: `
       <h2>Admin Invitation</h2>
       <p>Hi there,</p>
-      <p>You have been invited to join HotelCollab as an administrator.</p>
+      <p>You have been invited to join Influspark as an administrator.</p>
       <p>Click the link below to set up your account:</p>
       <p><a href="${setupUrl}" style="display:inline-block;padding:12px 24px;background:#14B8A6;color:#fff;text-decoration:none;border-radius:6px;">Set Up Your Account</a></p>
       <p>Or copy this link: ${setupUrl}</p>
@@ -140,4 +140,36 @@ const sendAdminInviteEmail = async (user, invitedByUserId) => {
   return { token, setupUrl };
 };
 
-module.exports = { sendVerificationEmail, sendPasswordResetEmail, sendAdminInviteEmail };
+/**
+ * Sends a contact-form submission to all active admin users.
+ */
+const sendContactFormEmail = async ({ fullName, email, phone, message }, adminEmails) => {
+  if (!adminEmails.length) {
+    console.log('[WARN] No admin emails found – contact form submission not delivered.');
+    return;
+  }
+
+  const phoneRow = phone
+    ? `<tr><td style="padding:8px 12px;font-weight:600;color:#374151;">Phone</td><td style="padding:8px 12px;color:#1F2937;">${phone}</td></tr>`
+    : '';
+
+  const html = `
+    <h2>New Contact Form Submission</h2>
+    <table style="border-collapse:collapse;width:100%;max-width:560px;">
+      <tr><td style="padding:8px 12px;font-weight:600;color:#374151;">Name</td><td style="padding:8px 12px;color:#1F2937;">${fullName}</td></tr>
+      <tr style="background:#F9FAFB;"><td style="padding:8px 12px;font-weight:600;color:#374151;">Email</td><td style="padding:8px 12px;color:#1F2937;"><a href="mailto:${email}">${email}</a></td></tr>
+      ${phoneRow}
+      <tr style="background:#F9FAFB;"><td style="padding:8px 12px;font-weight:600;color:#374151;vertical-align:top;">Message</td><td style="padding:8px 12px;color:#1F2937;white-space:pre-line;">${message}</td></tr>
+    </table>
+    <hr style="margin:24px 0;border:none;border-top:1px solid #E5E7EB;" />
+    <p style="font-size:12px;color:#9CA3AF;">This message was sent via the Influspark contact form.</p>
+  `;
+
+  await sendMail({
+    to: adminEmails.join(','),
+    subject: `Contact Form from ${fullName}`,
+    html,
+  });
+};
+
+module.exports = { sendVerificationEmail, sendPasswordResetEmail, sendAdminInviteEmail, sendContactFormEmail };
