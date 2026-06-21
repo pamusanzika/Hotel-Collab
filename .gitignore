@@ -26,5 +26,22 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Markdown documentation files
-*.md
+# Documentation files (except README)
+MEMORY.md
+COLLAB_OPPORTUNITIES_FEATURE.md
+PORTFOLIO_FEATURE.md
+STRIPE_PAYMENT_INTEGRATION.md
+FRONTEND_DOCUMENTATION.md
+Hotellisting.md
+PROJECT.md
+admin settings.md
+allhostdashboard.md
+allinflucertab.md
+authentication-system.md
+collaboration.md
+collaborationsforadmin.md
+contact-form-feature.md
+forgotpassword.md
+influncerprofile.md
+messages.md
+userview.md
