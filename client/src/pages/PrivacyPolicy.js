@@ -122,7 +122,7 @@ const PrivacyPolicy = () => {
             <li>Name</li>
             <li>Email address</li>
             <li>Profile details</li>
-            <li>Social media information (for influencers)</li>
+            <li>Social media information (for content creators)</li>
             <li>Hotel information (for hotel owners)</li>
             <li>Contact details</li>
             <li>Uploaded images and content</li>
@@ -147,7 +147,7 @@ const PrivacyPolicy = () => {
           <Paragraph>We use your data to:</Paragraph>
           <List>
             <li>Provide and improve our services</li>
-            <li>Enable communication between hotels and influencers</li>
+            <li>Enable communication between hotels and content creators</li>
             <li>Manage user accounts</li>
             <li>Personalize your experience</li>
             <li>Send notifications and updates</li>

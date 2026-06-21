@@ -282,10 +282,10 @@ const Hero = () => {
       <Content>
         <Badge>Connect. Create. Collaborate.</Badge>
         <Title>
-          Connect Hosts with Influencers, Grow Together
+          Connect Hosts with Content Creators, Grow Together
         </Title>
         <Subtitle>
-          Connecting hosts and influencers to create inspiring stories and unforgettable travel experiences.
+          Connecting hosts and content creators to create inspiring stories and unforgettable travel experiences.
         </Subtitle>
         <Actions>
           <Button $variant="primary" $size="lg" onClick={() => navigate('/apply')}>
@@ -316,7 +316,7 @@ const Hero = () => {
             <Bar $h={40} $color="rgba(255,255,255,0.25)" />
             <Bar $h={65} $color="rgba(255,255,255,0.35)" />
             <Bar $h={50} $color="rgba(255,255,255,0.25)" />
-            <Bar $h={85} $color="#14B8A6" />
+            <Bar $h={85} $color="#F97316" />
             <Bar $h={70} $color="rgba(255,255,255,0.35)" />
             <Bar $h={55} $color="rgba(255,255,255,0.25)" />
             <Bar $h={90} $color="#6366F1" />
@@ -325,9 +325,9 @@ const Hero = () => {
         </DashboardPreview>
 
         <PreviewCard>
-          <PreviewIcon src="/Influncer.svg" alt="Influencers" />
+          <PreviewIcon src="/Influncer.svg" alt="Content Creators" />
           <PreviewInfo>
-            <PreviewLabel>Influencers</PreviewLabel>
+            <PreviewLabel>Content Creators</PreviewLabel>
             <PreviewValue>8,350 +</PreviewValue>
           </PreviewInfo>
         </PreviewCard>

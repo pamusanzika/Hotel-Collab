@@ -186,6 +186,7 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
   const [campaignType, setCampaignType] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [amount, setAmount] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -247,7 +248,7 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
       return;
     }
     if (isOwner && !influencerId) {
-      setError('Please select an influencer');
+      setError('Please select a content creator');
       return;
     }
     if (!campaignType) {
@@ -258,6 +259,10 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
       setError('Please enter a campaign title');
       return;
     }
+    if (campaignType === 'paid_collaboration' && (!amount || parseFloat(amount) <= 0)) {
+      setError('Please enter a valid payment amount');
+      return;
+    }
     if (!startDate || !endDate) {
       setError('Please select both start and end dates');
       return;
@@ -265,7 +270,7 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
 
     setLoading(true);
     try {
-      await api.post('/campaigns', {
+      const payload = {
         hotelId,
         influencerId,
         campaignType,
@@ -273,7 +278,11 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
         description: description.trim(),
         startDate,
         endDate,
-      });
+      };
+      if (campaignType === 'paid_collaboration') {
+        payload.amount = parseFloat(amount);
+      }
+      await api.post('/campaigns', payload);
       if (onSuccess) onSuccess();
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create campaign');
@@ -370,7 +379,7 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
         {/* ── Influencer Selection (owner only) ───────────────── */}
         {isOwner && (
           <FieldGroup>
-            <Label>Select Influencer</Label>
+            <Label>Select Content Creator</Label>
             {selectedInfluencer ? (
               <SelectedChip>
                 {selectedInfluencer.avatar && (
@@ -378,7 +387,7 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
                     <img src={`${API_BASE}${selectedInfluencer.avatar}`} alt="" />
                   </SearchAvatar>
                 )}
-                <SearchName>{selectedInfluencer.displayName || 'Influencer'}</SearchName>
+                <SearchName>{selectedInfluencer.displayName || 'Content Creator'}</SearchName>
                 {!preSelectedInfluencer && (
                   <ChipRemove type="button" onClick={() => setSelectedInfluencer(null)}>
                     ×
@@ -389,7 +398,7 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
               <SearchWrapper>
                 <Input
                   type="text"
-                  placeholder="Search influencers by name..."
+                  placeholder="Search content creators by name..."
                   value={influencerSearch}
                   onChange={(e) => setInfluencerSearch(e.target.value)}
                 />
@@ -409,7 +418,7 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
                             <img src={`${API_BASE}${inf.avatar}`} alt="" />
                           ) : null}
                         </SearchAvatar>
-                        <SearchName>{inf.displayName || 'Influencer'}</SearchName>
+                        <SearchName>{inf.displayName || 'Content Creator'}</SearchName>
                       </SearchItem>
                     ))}
                   </SearchResults>
@@ -429,6 +438,22 @@ const CampaignForm = ({ preSelectedHotel, preSelectedInfluencer, onSuccess, onCa
             <option value="discount_stay">Discount Stay</option>
           </Select>
         </FieldGroup>
+
+        {/* ── Amount (paid only) ─────────────────────────────── */}
+        {campaignType === 'paid_collaboration' && (
+          <FieldGroup>
+            <Label>Payment Amount (USD)</Label>
+            <Input
+              type="number"
+              placeholder="e.g. 500"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              min="1"
+              step="0.01"
+              required
+            />
+          </FieldGroup>
+        )}
 
         {/* ── Title ──────────────────────────────────────────── */}
         <FieldGroup>

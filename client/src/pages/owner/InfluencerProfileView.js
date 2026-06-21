@@ -111,6 +111,63 @@ const TagRow = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
+const PortfolioGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
+const PortfolioItem = styled.a`
+  position: relative;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid ${({ theme }) => theme.colors.borderLight};
+  overflow: hidden;
+  background: ${({ theme }) => theme.colors.surface};
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s, transform 0.15s;
+
+  &:hover {
+    box-shadow: ${({ theme }) => theme.shadows.md};
+    transform: translateY(-2px);
+  }
+`;
+
+const PortfolioThumb = styled.div`
+  width: 100%;
+  aspect-ratio: 1;
+  background: ${({ theme }) => theme.colors.borderLight};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img, video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const PortfolioFileIcon = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+`;
+
+const PortfolioItemName = styled.div`
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.text};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
 const ActionBar = styled.div`
   margin-top: ${({ theme }) => theme.spacing.xl};
   display: flex;
@@ -170,7 +227,7 @@ const InfluencerProfileView = () => {
           } catch (_) {}
         }
       } catch (err) {
-        setError('Failed to load influencer details.');
+        setError('Failed to load content creator details.');
       } finally {
         setLoading(false);
       }
@@ -178,13 +235,13 @@ const InfluencerProfileView = () => {
     load();
   }, [id]);
 
-  if (loading) return <LoadingState>Loading influencer details...</LoadingState>;
+  if (loading) return <LoadingState>Loading content creator details...</LoadingState>;
   if (error) return <ErrorState>{error}</ErrorState>;
-  if (!influencer) return <ErrorState>Influencer not found.</ErrorState>;
+  if (!influencer) return <ErrorState>Content creator not found.</ErrorState>;
 
   return (
     <>
-      <PageHeader title="Influencer Profile" subtitle="Full information about this influencer" />
+      <PageHeader title="Content Creator Profile" subtitle="Full information about this content creator" />
 
       <Wrapper>
         {/* ── Avatar ──────────────────────────────────────────────────── */}
@@ -198,7 +255,7 @@ const InfluencerProfileView = () => {
 
         {/* ── Name & niche ────────────────────────────────────────────── */}
         <InfluencerName>
-          {influencer.displayName || influencer.userName || 'Unnamed Influencer'}
+          {influencer.displayName || influencer.userName || 'Unnamed Content Creator'}
         </InfluencerName>
         <NicheText>{influencer.niche || 'Type not specified'}</NicheText>
         {influencer.location && <LocationText>{influencer.location}</LocationText>}
@@ -254,10 +311,42 @@ const InfluencerProfileView = () => {
           </DetailCard>
         </DetailGrid>
 
+        {/* ── Portfolio ────────────────────────────────────────────── */}
+        {influencer.portfolio && influencer.portfolio.length > 0 && (
+          <Card style={{ marginTop: '1.5rem' }}>
+            <SectionLabel>Portfolio ({influencer.portfolio.length})</SectionLabel>
+            <PortfolioGrid>
+              {influencer.portfolio.map((item) => {
+                const fullUrl = `${API_BASE}${item.url}`;
+                const isImage = item.fileType === 'image';
+                const isVideo = item.fileType === 'video';
+                const isPdf = item.fileType === 'pdf';
+                return (
+                  <PortfolioItem
+                    key={item._id}
+                    href={fullUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <PortfolioThumb>
+                      {isImage && <img src={fullUrl} alt={item.title || item.originalName} />}
+                      {isVideo && <video src={fullUrl} muted />}
+                      {isPdf && <PortfolioFileIcon><span style={{ fontSize: '2.5rem' }}>&#128196;</span>PDF</PortfolioFileIcon>}
+                      {!isImage && !isVideo && !isPdf && (
+                        <PortfolioFileIcon><span style={{ fontSize: '2.5rem' }}>&#128193;</span>File</PortfolioFileIcon>
+                      )}
+                    </PortfolioThumb>
+                  </PortfolioItem>
+                );
+              })}
+            </PortfolioGrid>
+          </Card>
+        )}
+
         {/* ── Actions ───────────────────────────────────────────────── */}
         <ActionBar>
           <Button $variant="ghost" onClick={() => navigate('/owner/influencers')}>
-            Back to Influencers
+            Back to Content Creators
           </Button>
           <Button
             $variant="primary"
@@ -275,7 +364,7 @@ const InfluencerProfileView = () => {
               }
             }}
           >
-            {msgLoading ? 'Opening...' : 'Message Influencer'}
+            {msgLoading ? 'Opening...' : 'Message Content Creator'}
           </Button>
           <Button
             $variant="secondary"

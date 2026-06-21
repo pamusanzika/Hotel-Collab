@@ -87,6 +87,8 @@ async function enrichCampaigns(campaigns) {
   });
 }
 
+exports.sendCampaignNotification = sendCampaignNotification;
+
 // ─── Controller ─────────────────────────────────────────────────────────────────
 
 exports.create = async (req, res) => {
@@ -103,7 +105,7 @@ exports.create = async (req, res) => {
       }
       const influencer = await User.findOne({ _id: influencerId, role: 'influencer', status: 'active' });
       if (!influencer) {
-        return res.status(404).json({ error: 'Influencer not found or inactive' });
+        return res.status(404).json({ error: 'Content Creator not found or inactive' });
       }
     } else if (role === 'influencer') {
       if (influencerId !== userId.toString()) {
@@ -113,6 +115,13 @@ exports.create = async (req, res) => {
       if (!hotel) {
         return res.status(404).json({ error: 'Hotel not found or inactive' });
       }
+    }
+
+    const isPaid = campaignType === 'paid_collaboration';
+    const amount = isPaid ? req.body.amount : 0;
+
+    if (isPaid && (!amount || amount <= 0)) {
+      return res.status(400).json({ error: 'Amount is required for paid collaborations' });
     }
 
     const campaign = await Campaign.create({
@@ -126,6 +135,8 @@ exports.create = async (req, res) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       status: 'pending',
+      amount: isPaid ? amount : 0,
+      paymentStatus: isPaid ? 'pending' : 'not_required',
     });
 
     // Determine recipient
@@ -306,10 +317,41 @@ exports.updateStatus = async (req, res) => {
       return res.status(403).json({ error: 'Only the recipient can approve or reject a campaign' });
     }
 
+    // For paid campaigns, approval requires payment first
+    const isPaidCampaign = campaign.campaignType === 'paid_collaboration' && campaign.amount > 0;
+    if (currentStatus === 'pending' && newStatus === 'upcoming' && isPaidCampaign) {
+      if (campaign.paymentStatus !== 'paid') {
+        return res.status(400).json({
+          error: 'Payment is required before approving this paid campaign',
+          requiresPayment: true,
+          amount: campaign.amount,
+        });
+      }
+    }
+
     campaign.status = newStatus;
     if (newStatus === 'cancelled' && cancelReason) {
       campaign.cancelReason = cancelReason;
     }
+
+    // Handle refund on cancellation of paid campaigns
+    if ((newStatus === 'cancelled' || newStatus === 'rejected') && isPaidCampaign && campaign.paymentStatus === 'paid') {
+      const Payment = require('../models/Payment');
+      const { refundPayment } = require('../services/stripeService');
+      const payment = await Payment.findOne({ campaignId: campaign._id, status: 'succeeded' });
+      if (payment) {
+        try {
+          const refund = await refundPayment(payment.stripePaymentIntentId);
+          payment.status = 'refunded';
+          payment.refundId = refund.id;
+          await payment.save();
+          campaign.paymentStatus = 'refunded';
+        } catch (refundErr) {
+          console.error('Auto-refund failed:', refundErr);
+        }
+      }
+    }
+
     await campaign.save();
 
     // Determine the other party for notification

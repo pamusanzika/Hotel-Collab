@@ -83,7 +83,7 @@ const AdminLogin = () => {
                 type="email"
                 value={form.email}
                 onChange={onChange}
-                placeholder="admin@influspark.dev"
+                placeholder="admin@hotelcollab.dev"
                 required
               />
             </InputWrapper>
@@ -94,6 +94,7 @@ const AdminLogin = () => {
                 type="password"
                 value={form.password}
                 onChange={onChange}
+                placeholder="Pamuda2003"
                 required
               />
             </InputWrapper>

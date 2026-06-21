@@ -111,7 +111,7 @@ const TermsConditions = () => {
           <Paragraph>Influspark is a collaboration platform that connects:</Paragraph>
           <List>
             <li>Hotel Owners</li>
-            <li>Travel Influencers</li>
+            <li>Travel Content Creators</li>
           </List>
           <Paragraph>for partnership and marketing collaborations.</Paragraph>
         </Section>
@@ -142,7 +142,7 @@ const TermsConditions = () => {
         <Section>
           <SectionTitle>5. Collaboration Agreements</SectionTitle>
           <Paragraph>Influspark only provides the platform for connection.</Paragraph>
-          <Paragraph>Any agreements between hotels and influencers are:</Paragraph>
+          <Paragraph>Any agreements between hotels and content creators are:</Paragraph>
           <List>
             <li>Made directly between the two parties</li>
             <li>Not guaranteed by Influspark</li>

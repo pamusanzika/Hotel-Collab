@@ -446,7 +446,7 @@ const AddHotelListing = () => {
     <>
       <PageHeader
         title="Add Hotel Listing"
-        subtitle="Fill in the details below to list your hotel for influencer collaborations"
+        subtitle="Fill in the details below to list your hotel for content creator collaborations"
       />
 
       <FormWrapper>
@@ -600,7 +600,7 @@ const AddHotelListing = () => {
               marginBottom: '0.75rem',
             }}
           >
-            Select the types of collaborations you offer to influencers.
+            Select the types of collaborations you offer to content creators.
           </p>
 
           <CheckGroup>

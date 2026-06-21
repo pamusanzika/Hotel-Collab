@@ -223,6 +223,27 @@ const AdminCollaborationDetail = () => {
           <InfoLabel>Created on</InfoLabel>
           <InfoValue>{formatDate(campaign.createdAt)}</InfoValue>
         </InfoRow>
+        {campaign.campaignType === 'paid_collaboration' && campaign.amount > 0 && (
+          <InfoRow>
+            <InfoLabel>Amount</InfoLabel>
+            <InfoValue style={{ fontWeight: 600 }}>${campaign.amount.toFixed(2)} USD</InfoValue>
+          </InfoRow>
+        )}
+        {campaign.paymentStatus && campaign.paymentStatus !== 'not_required' && (
+          <InfoRow>
+            <InfoLabel>Payment</InfoLabel>
+            <Badge $variant={
+              campaign.paymentStatus === 'paid' ? 'active' :
+              campaign.paymentStatus === 'refunded' ? 'banned' :
+              campaign.paymentStatus === 'failed' ? 'banned' : 'pending'
+            }>
+              {campaign.paymentStatus === 'paid' ? 'Paid' :
+               campaign.paymentStatus === 'refunded' ? 'Refunded' :
+               campaign.paymentStatus === 'failed' ? 'Failed' :
+               campaign.paymentStatus === 'requires_payment' ? 'Awaiting Payment' : 'Pending'}
+            </Badge>
+          </InfoRow>
+        )}
       </Card>
 
       {/* Cancel Reason */}
@@ -253,7 +274,7 @@ const AdminCollaborationDetail = () => {
           </PartyCard>
         </div>
         <div>
-          <SectionTitle>Influencer</SectionTitle>
+          <SectionTitle>Content Creator</SectionTitle>
           <PartyCard>
             <Avatar $round>
               {campaign.influencerAvatar && (
@@ -277,6 +298,71 @@ const AdminCollaborationDetail = () => {
           <Card>
             <Description>{campaign.description}</Description>
           </Card>
+        </Section>
+      )}
+
+      {/* Payment Details */}
+      {campaign.payment && (
+        <Section>
+          <SectionTitle>Payment Details</SectionTitle>
+          <Card>
+            <InfoRow>
+              <InfoLabel>Amount</InfoLabel>
+              <InfoValue style={{ fontWeight: 600 }}>
+                ${campaign.payment.amount.toFixed(2)} {campaign.payment.currency.toUpperCase()}
+              </InfoValue>
+            </InfoRow>
+            <InfoRow>
+              <InfoLabel>Status</InfoLabel>
+              <Badge $variant={
+                campaign.payment.status === 'succeeded' ? 'active' :
+                campaign.payment.status === 'refunded' ? 'banned' :
+                campaign.payment.status === 'failed' ? 'banned' : 'pending'
+              }>
+                {campaign.payment.status.charAt(0).toUpperCase() + campaign.payment.status.slice(1)}
+              </Badge>
+            </InfoRow>
+            <InfoRow>
+              <InfoLabel>Stripe ID</InfoLabel>
+              <InfoValue style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                {campaign.payment.stripePaymentIntentId}
+              </InfoValue>
+            </InfoRow>
+            {campaign.payment.refundId && (
+              <InfoRow>
+                <InfoLabel>Refund ID</InfoLabel>
+                <InfoValue style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                  {campaign.payment.refundId}
+                </InfoValue>
+              </InfoRow>
+            )}
+            <InfoRow>
+              <InfoLabel>Paid on</InfoLabel>
+              <InfoValue>{formatDate(campaign.payment.createdAt)}</InfoValue>
+            </InfoRow>
+          </Card>
+        </Section>
+      )}
+
+      {/* Reviews */}
+      {campaign.reviews && campaign.reviews.length > 0 && (
+        <Section>
+          <SectionTitle>Reviews</SectionTitle>
+          {campaign.reviews.map((review) => (
+            <Card key={review._id} style={{ marginBottom: '0.75rem' }}>
+              <InfoRow>
+                <InfoLabel>Reviewer</InfoLabel>
+                <InfoValue>{review.reviewerId?.name || 'User'} ({review.reviewerId?.role})</InfoValue>
+              </InfoRow>
+              <InfoRow>
+                <InfoLabel>Rating</InfoLabel>
+                <InfoValue>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</InfoValue>
+              </InfoRow>
+              {review.comment && (
+                <Description style={{ marginTop: '0.5rem' }}>{review.comment}</Description>
+              )}
+            </Card>
+          ))}
         </Section>
       )}
     </>

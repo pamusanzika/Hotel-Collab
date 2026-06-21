@@ -21,6 +21,17 @@ const influencerProfileSchema = new mongoose.Schema(
         linkedAt: { type: Date, default: Date.now },
       },
     ],
+    portfolio: [
+      {
+        url: { type: String, required: true },
+        originalName: { type: String, required: true },
+        fileType: { type: String, enum: ['image', 'video', 'pdf', 'other'], required: true },
+        mimeType: { type: String },
+        size: { type: Number },
+        title: { type: String, trim: true, default: '' },
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

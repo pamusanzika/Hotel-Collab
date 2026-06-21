@@ -230,7 +230,7 @@ const Stars = styled.div`
 `;
 
 const Star = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="#14B8A6" stroke="none">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="#F97316" stroke="none">
     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
   </svg>
 );
@@ -270,7 +270,7 @@ const Aboutus = () => (
         <ImageWrapper>
           <PersonImage
             src="/headshot-tender-cute-curly-haired-20s-woman-warm-beanie-cool-sweatshirt-smiling-broadly-enjoying-awesome-sunny-chilly-days-outdoors-having-fun-posing-blue-background-copy-space.webp"
-            alt="Influencer collaborating"
+            alt="Content creator collaborating"
           />
 
           {/* Floating stat card – top right */}
@@ -299,14 +299,14 @@ const Aboutus = () => (
         <GradientBlobRight />
         <Description>
        At Influspark, we believe great stories deserve great stages.
-Our platform connects hotels and travel influencers to create meaningful collaborations that inspire audiences around the world.
-We make it simple for hotels to find the right creators and for influencers to discover stays worth sharing. By bringing hospitality and creativity together, we help transform travel experiences into authentic, engaging content.
+Our platform connects hotels and travel content creators to create meaningful collaborations that inspire audiences around the world.
+We make it simple for hotels to find the right creators and for content creators to discover stays worth sharing. By bringing hospitality and creativity together, we help transform travel experiences into authentic, engaging content.
 Influspark is more than a platform – it’s a community where brands grow, creators shine, and collaborations spark.
         </Description>
 
         <TrustCard>
           <TrustHeader>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <TrustBrand>Influspark</TrustBrand>

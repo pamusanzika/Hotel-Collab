@@ -13,6 +13,10 @@ const { initializeSocket } = require('./socket');
 
 const app = express();
 
+// Stripe webhook needs raw body — must be before express.json()
+const { handleStripeWebhook } = require('./controllers/webhookController');
+app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), handleStripeWebhook);
+
 // Security
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({

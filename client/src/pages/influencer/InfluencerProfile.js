@@ -237,6 +237,106 @@ const FallbackBox = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
 `;
 
+/* ──────────── Portfolio styles ──────────── */
+
+const PortfolioGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const PortfolioItem = styled.div`
+  position: relative;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid ${({ theme }) => theme.colors.borderLight};
+  overflow: hidden;
+  background: ${({ theme }) => theme.colors.surface};
+`;
+
+const PortfolioThumb = styled.div`
+  width: 100%;
+  aspect-ratio: 1;
+  background: ${({ theme }) => theme.colors.borderLight};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img, video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const PortfolioFileIcon = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.sm};
+`;
+
+const PortfolioItemFooter = styled.div`
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const PortfolioItemName = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.text};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+`;
+
+const RemoveBtn = styled.button`
+  background: ${({ theme }) => theme.colors.error};
+  color: #fff;
+  border: none;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover { opacity: 0.85; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+`;
+
+const DropZone = styled.div`
+  border: 2px dashed ${({ theme, $dragOver }) => $dragOver ? theme.colors.primary : theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: ${({ theme }) => theme.spacing.xl};
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: ${({ theme, $dragOver }) => $dragOver ? `${theme.colors.primary}08` : 'transparent'};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const DropZoneText = styled.p`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  margin: 0;
+`;
+
+const UploadProgress = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
 /* ──────────── Profile Preview styles ──────────── */
 
 const PreviewHeader = styled.div`
@@ -308,6 +408,13 @@ const COLLAB_OPTIONS = [
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
+const PORTFOLIO_ALLOWED_TYPES = [
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+  'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm',
+  'application/pdf',
+];
+const PORTFOLIO_MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+
 const SERVER_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5001/api').replace(/\/api\/?$/, '');
 
 const toFullUrl = (path) => {
@@ -350,6 +457,13 @@ const InfluencerProfile = () => {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
 
+  // ── Portfolio state ──
+  const [portfolio, setPortfolio] = useState([]);
+  const [portfolioUploading, setPortfolioUploading] = useState(false);
+  const [portfolioError, setPortfolioError] = useState('');
+  const [dragOver, setDragOver] = useState(false);
+  const portfolioInputRef = useRef(null);
+
   // ── Profile preview modal ──
   const [showPreview, setShowPreview] = useState(false);
 
@@ -364,6 +478,7 @@ const InfluencerProfile = () => {
         if (data.bio) setBio(data.bio);
         if (data.avatar) setAvatarSaved(toFullUrl(data.avatar));
         if (data.collaborationTypes) setCollabTypes(data.collaborationTypes);
+        if (data.portfolio) setPortfolio(data.portfolio);
         if (data.connectedPlatform) {
           setConnectedPlatform(data.connectedPlatform);
         }
@@ -492,6 +607,68 @@ const InfluencerProfile = () => {
     } finally {
       setDisconnecting(false);
     }
+  };
+
+  /* ──────── Portfolio handlers ──────── */
+
+  const handlePortfolioUpload = async (files) => {
+    const fileList = Array.from(files);
+    if (fileList.length === 0) return;
+
+    setPortfolioError('');
+
+    for (const file of fileList) {
+      if (!PORTFOLIO_ALLOWED_TYPES.includes(file.type)) {
+        setPortfolioError(`"${file.name}" is not a supported file type. Use images, videos, or PDFs.`);
+        return;
+      }
+      if (file.size > PORTFOLIO_MAX_SIZE) {
+        setPortfolioError(`"${file.name}" exceeds the 50 MB limit.`);
+        return;
+      }
+    }
+
+    if (portfolio.length + fileList.length > 20) {
+      setPortfolioError(`Portfolio limit is 20 items. You have ${portfolio.length} already.`);
+      return;
+    }
+
+    setPortfolioUploading(true);
+    try {
+      const fd = new FormData();
+      fileList.forEach((f) => fd.append('files', f));
+      const { data } = await api.post('/influencer/portfolio', fd);
+      setPortfolio((prev) => [...prev, ...data.items]);
+    } catch (err) {
+      setPortfolioError(err.response?.data?.message || 'Upload failed. Please try again.');
+    } finally {
+      setPortfolioUploading(false);
+      if (portfolioInputRef.current) portfolioInputRef.current.value = '';
+    }
+  };
+
+  const handlePortfolioDelete = async (itemId) => {
+    if (!window.confirm('Remove this portfolio item?')) return;
+    try {
+      await api.delete(`/influencer/portfolio/${itemId}`);
+      setPortfolio((prev) => prev.filter((p) => p._id !== itemId));
+    } catch {
+      setPortfolioError('Failed to remove item.');
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    handlePortfolioUpload(e.dataTransfer.files);
+  };
+
+  const renderPortfolioThumb = (item) => {
+    const fullUrl = toFullUrl(item.url);
+    if (item.fileType === 'image') return <img src={fullUrl} alt={item.title || item.originalName} />;
+    if (item.fileType === 'video') return <video src={fullUrl} muted />;
+    if (item.fileType === 'pdf') return <PortfolioFileIcon><span style={{ fontSize: '2rem' }}>&#128196;</span>PDF</PortfolioFileIcon>;
+    return <PortfolioFileIcon><span style={{ fontSize: '2rem' }}>&#128193;</span>{item.originalName}</PortfolioFileIcon>;
   };
 
   /* ──────── Save basic info + collab types ──────── */
@@ -657,6 +834,67 @@ const InfluencerProfile = () => {
               </SmallText>
             )}
           </Form>
+        </Card>
+      </Section>
+
+      {/* ── Portfolio ── */}
+      <Section>
+        <SectionTitle>Portfolio</SectionTitle>
+        <Card>
+          <SmallText style={{ marginBottom: '1rem', marginTop: 0 }}>
+            Upload images, videos, or PDFs to showcase your work. Max 50 MB per file, up to 20 items.
+          </SmallText>
+
+          <DropZone
+            $dragOver={dragOver}
+            onClick={() => portfolioInputRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+          >
+            <DropZoneText>
+              {portfolioUploading
+                ? 'Uploading...'
+                : 'Drag & drop files here, or click to browse'}
+            </DropZoneText>
+          </DropZone>
+
+          <HiddenInput
+            ref={portfolioInputRef}
+            type="file"
+            multiple
+            accept=".jpg,.jpeg,.png,.webp,.gif,.mp4,.mov,.avi,.webm,.pdf"
+            onChange={(e) => handlePortfolioUpload(e.target.files)}
+          />
+
+          {portfolioUploading && <UploadProgress>Uploading files...</UploadProgress>}
+          {portfolioError && <ErrorText>{portfolioError}</ErrorText>}
+
+          {portfolio.length > 0 && (
+            <PortfolioGrid style={{ marginTop: '1rem' }}>
+              {portfolio.map((item) => (
+                <PortfolioItem key={item._id}>
+                  <PortfolioThumb>
+                    {renderPortfolioThumb(item)}
+                  </PortfolioThumb>
+                  <PortfolioItemFooter>
+                    <RemoveBtn
+                      onClick={() => handlePortfolioDelete(item._id)}
+                      disabled={portfolioUploading}
+                    >
+                      Remove
+                    </RemoveBtn>
+                  </PortfolioItemFooter>
+                </PortfolioItem>
+              ))}
+            </PortfolioGrid>
+          )}
+
+          {portfolio.length === 0 && !portfolioUploading && (
+            <FallbackBox style={{ marginTop: '1rem' }}>
+              No portfolio items yet. Upload your best work to attract hotels.
+            </FallbackBox>
+          )}
         </Card>
       </Section>
 
@@ -867,6 +1105,19 @@ const InfluencerProfile = () => {
                 );
               })}
             </TagList>
+          </PreviewSection>
+        )}
+
+        {portfolio.length > 0 && (
+          <PreviewSection>
+            <PreviewLabel>Portfolio ({portfolio.length})</PreviewLabel>
+            <PortfolioGrid style={{ marginTop: '0.5rem' }}>
+              {portfolio.slice(0, 6).map((item) => (
+                <PortfolioItem key={item._id}>
+                  <PortfolioThumb>{renderPortfolioThumb(item)}</PortfolioThumb>
+                </PortfolioItem>
+              ))}
+            </PortfolioGrid>
           </PreviewSection>
         )}
 

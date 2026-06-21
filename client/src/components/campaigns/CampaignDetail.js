@@ -5,6 +5,8 @@ import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import StarRating from './StarRating';
 import ReviewForm from './ReviewForm';
+import PaymentStatus from './PaymentStatus';
+import PaymentModal from './PaymentModal';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../api/axios';
 
@@ -250,6 +252,7 @@ const CampaignDetail = ({ campaignId, onStatusChange }) => {
   const [actionLoading, setActionLoading] = useState('');
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -300,6 +303,8 @@ const CampaignDetail = ({ campaignId, onStatusChange }) => {
     : campaign.createdBy?.toString() === user._id;
   const isRecipient = !isCreator;
   const currentStatus = campaign.status;
+  const isPaidCampaign = campaign.campaignType === 'paid_collaboration' && campaign.amount > 0;
+  const isOwnerViewing = user?.role === 'hotel_owner';
 
   // Can the current user leave a review?
   const isDone = currentStatus === 'done';
@@ -327,6 +332,12 @@ const CampaignDetail = ({ campaignId, onStatusChange }) => {
           <InfoLabel>Created by</InfoLabel>
           <InfoValue>{campaign.createdBy?.name || 'Unknown'}</InfoValue>
         </InfoRow>
+        {campaign.campaignType === 'paid_collaboration' && campaign.amount > 0 && (
+          <InfoRow>
+            <InfoLabel>Payment</InfoLabel>
+            <PaymentStatus paymentStatus={campaign.paymentStatus} amount={campaign.amount} />
+          </InfoRow>
+        )}
       </Card>
 
       {/* ── Cancel Reason ─────────────────────────────── */}
@@ -356,7 +367,7 @@ const CampaignDetail = ({ campaignId, onStatusChange }) => {
           </PartyCard>
         </div>
         <div>
-          <SectionTitle>Influencer</SectionTitle>
+          <SectionTitle>Content Creator</SectionTitle>
           <PartyCard>
             <Avatar $round>
               {campaign.influencerAvatar && (
@@ -364,7 +375,7 @@ const CampaignDetail = ({ campaignId, onStatusChange }) => {
               )}
             </Avatar>
             <PartyInfo>
-              <PartyName>{campaign.influencerDisplayName || 'Influencer'}</PartyName>
+              <PartyName>{campaign.influencerDisplayName || 'Content Creator'}</PartyName>
               <PartyMeta>
                 {[campaign.influencerNiche, campaign.influencerLocation].filter(Boolean).join(', ') || ''}
               </PartyMeta>
@@ -387,13 +398,23 @@ const CampaignDetail = ({ campaignId, onStatusChange }) => {
       <ActionBar>
         {currentStatus === 'pending' && isRecipient && (
           <>
-            <Button
-              $variant="primary"
-              disabled={!!actionLoading}
-              onClick={() => handleStatusChange('upcoming')}
-            >
-              {actionLoading === 'upcoming' ? 'Approving...' : 'Approve Campaign'}
-            </Button>
+            {isPaidCampaign && isOwnerViewing && campaign.paymentStatus !== 'paid' ? (
+              <Button
+                $variant="primary"
+                disabled={!!actionLoading}
+                onClick={() => setShowPaymentModal(true)}
+              >
+                Approve & Pay (${campaign.amount.toFixed(2)})
+              </Button>
+            ) : (
+              <Button
+                $variant="primary"
+                disabled={!!actionLoading}
+                onClick={() => handleStatusChange('upcoming')}
+              >
+                {actionLoading === 'upcoming' ? 'Approving...' : 'Approve Campaign'}
+              </Button>
+            )}
             <Button
               $variant="danger"
               disabled={!!actionLoading}
@@ -472,6 +493,19 @@ const CampaignDetail = ({ campaignId, onStatusChange }) => {
           </Card>
         )}
       </Section>
+
+      {/* ── Payment Modal ─────────────────────────────── */}
+      {showPaymentModal && (
+        <PaymentModal
+          campaignId={campaignId}
+          amount={campaign.amount}
+          onSuccess={() => {
+            setShowPaymentModal(false);
+            setTimeout(() => load(), 1500);
+          }}
+          onClose={() => setShowPaymentModal(false)}
+        />
+      )}
 
       {/* ── Cancel Reason Modal ────────────────────────── */}
       {showCancelModal && (

@@ -655,7 +655,7 @@ const EditHotelListing = () => {
               marginBottom: '0.75rem',
             }}
           >
-            Select the types of collaborations you offer to influencers.
+            Select the types of collaborations you offer to content creators.
           </p>
 
           <CheckGroup>

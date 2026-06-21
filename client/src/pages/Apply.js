@@ -74,24 +74,24 @@ const Apply = () => {
           <Title>Join Influspark</Title>
           <Subtitle>Choose how you want to use the platform</Subtitle>
           <RoleGrid>
-            <RoleCard $color="#14B8A6" onClick={() => navigate('/apply/hotel-owner')}>
+            <RoleCard $color="#F97316" onClick={() => navigate('/apply/hotel-owner')}>
               <RoleIcon><img src="/Hotel.svg" alt="Hotel" /></RoleIcon>
               <RoleTitle>Hotel Owner</RoleTitle>
               <RoleDesc>
-                List your properties and find influencers for content collaborations.
+                List your properties and find content creators for collaborations.
               </RoleDesc>
               <Button $variant="primary" $fullWidth>
                 Apply as Hotel Owner
               </Button>
             </RoleCard>
             <RoleCard $color="#6366F1" onClick={() => navigate('/apply/influencer')}>
-              <RoleIcon><img src="/Influncer.svg" alt="Influencer" /></RoleIcon>
-              <RoleTitle>Influencer</RoleTitle>
+              <RoleIcon><img src="/Influncer.svg" alt="Content Creator" /></RoleIcon>
+              <RoleTitle>Content Creator</RoleTitle>
               <RoleDesc>
                 Connect your social accounts and discover hotel collaboration offers.
               </RoleDesc>
               <Button $variant="ghost" $fullWidth>
-                Apply as Influencer
+                Apply as Content Creator
               </Button>
             </RoleCard>
           </RoleGrid>

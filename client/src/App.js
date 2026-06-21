@@ -36,6 +36,9 @@ import OwnerCampaignDetail from './pages/owner/OwnerCampaignDetail';
 import OwnerSettings from './pages/owner/OwnerSettings';
 import InfluencersListing from './pages/owner/InfluencersListing';
 import InfluencerProfileView from './pages/owner/InfluencerProfileView';
+import OwnerOpportunities from './pages/owner/OwnerOpportunities';
+import OwnerOpportunityCreate from './pages/owner/OwnerOpportunityCreate';
+import OwnerOpportunityDetail from './pages/owner/OwnerOpportunityDetail';
 
 // Influencer pages
 import InfluencerDashboard from './pages/influencer/InfluencerDashboard';
@@ -46,6 +49,7 @@ import InfluencerCampaignCreate from './pages/influencer/InfluencerCampaignCreat
 import InfluencerCampaignDetail from './pages/influencer/InfluencerCampaignDetail';
 import HostsListing from './pages/influencer/HostsListing';
 import HostDetails from './pages/influencer/HostDetails';
+import BrowseOpportunities from './pages/influencer/BrowseOpportunities';
 
 // Shared pages
 import Messages from './pages/shared/Messages';
@@ -59,12 +63,17 @@ import AdminCollaborationDetail from './pages/admin/AdminCollaborationDetail';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminUserPreview from './pages/admin/AdminUserPreview';
 import AdminSetupPassword from './pages/admin/AdminSetupPassword';
+import AdminPayments from './pages/admin/AdminPayments';
+import AdminOpportunities from './pages/admin/AdminOpportunities';
+import AdminOpportunityDetail from './pages/admin/AdminOpportunityDetail';
 
 // Nav configs
 const adminNav = [
   { to: '/admin/dashboard', label: 'Dashboard', end: true },
   { to: '/admin/users', label: 'Users' },
   { to: '/admin/collaborations', label: 'Collaborations' },
+  { to: '/admin/opportunities', label: 'Opportunities' },
+  { to: '/admin/payments', label: 'Payments' },
   { to: '/admin/settings', label: 'Settings' },
 ];
 
@@ -91,9 +100,10 @@ const OwnerLayout = () => {
     { to: '/owner', label: 'Dashboard', end: true },
     { to: '/owner/profile', label: 'Profile' },
     { to: '/owner/hotels', label: 'Hotels' },
-    { to: '/owner/influencers', label: 'Influencers' },
+    { to: '/owner/influencers', label: 'Content Creators' },
     { to: '/owner/messages', label: 'Messages', badge: unreadCount },
     { to: '/owner/collaborations', label: 'Collaborations', badge: pendingCampaigns },
+    { to: '/owner/opportunities', label: 'Opportunities' },
     { to: '/owner/settings', label: 'Settings' },
   ];
   return <DashboardLayout logoSrc="/logo-3.svg" logoText="Influspark" navItems={navItems} />;
@@ -108,6 +118,7 @@ const InfluencerLayout = () => {
     { to: '/influencer/hosts', label: 'Hosts' },
     { to: '/influencer/messages', label: 'Messages', badge: unreadCount },
     { to: '/influencer/campaigns', label: 'Campaigns', badge: pendingCampaigns },
+    { to: '/influencer/opportunities', label: 'Opportunities' },
     { to: '/influencer/settings', label: 'Settings' },
   ];
   return <DashboardLayout logoSrc="/logo-3.svg" logoText="Influspark" navItems={navItems} />;
@@ -155,6 +166,9 @@ const App = () => (
               <Route path="collaborations" element={<OwnerCollaborations />} />
               <Route path="collaborations/create" element={<OwnerCampaignCreate />} />
               <Route path="collaborations/:id" element={<OwnerCampaignDetail />} />
+              <Route path="opportunities" element={<OwnerOpportunities />} />
+              <Route path="opportunities/create" element={<OwnerOpportunityCreate />} />
+              <Route path="opportunities/:id" element={<OwnerOpportunityDetail />} />
               <Route path="settings" element={<OwnerSettings />} />
             </Route>
 
@@ -176,6 +190,7 @@ const App = () => (
               <Route path="campaigns" element={<InfluencerCampaigns />} />
               <Route path="campaigns/create" element={<InfluencerCampaignCreate />} />
               <Route path="campaigns/:id" element={<InfluencerCampaignDetail />} />
+              <Route path="opportunities" element={<BrowseOpportunities />} />
               <Route path="settings" element={<InfluencerSettings />} />
             </Route>
 
@@ -194,6 +209,9 @@ const App = () => (
               <Route path="users/:id" element={<AdminUserPreview />} />
               <Route path="collaborations" element={<AdminCollaborations />} />
               <Route path="collaborations/:id" element={<AdminCollaborationDetail />} />
+              <Route path="payments" element={<AdminPayments />} />
+              <Route path="opportunities" element={<AdminOpportunities />} />
+              <Route path="opportunities/:id" element={<AdminOpportunityDetail />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Routes>

@@ -125,7 +125,7 @@ const CampaignCard = ({
 
   // Show the other party's info
   const otherName = isOwnerView
-    ? campaign.influencerDisplayName || 'Influencer'
+    ? campaign.influencerDisplayName || 'Content Creator'
     : campaign.hotelId?.name || 'Hotel';
 
   const otherImage = isOwnerView

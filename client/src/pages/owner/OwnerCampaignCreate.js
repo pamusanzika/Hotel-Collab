@@ -11,7 +11,7 @@ const OwnerCampaignCreate = () => {
 
   return (
     <>
-      <PageHeader title="Create Campaign" subtitle="Propose a new collaboration with an influencer" />
+      <PageHeader title="Create Campaign" subtitle="Propose a new collaboration with a content creator" />
       <CampaignForm
         preSelectedInfluencer={preSelectedInfluencer}
         onSuccess={() => navigate('/owner/collaborations')}

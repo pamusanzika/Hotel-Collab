@@ -57,7 +57,7 @@ exports.createConversation = async (req, res) => {
 
     if (!validPair) {
       return res.status(403).json({
-        error: 'Messaging is only available between hotels and influencers.',
+        error: 'Messaging is only available between hotels and content creators.',
       });
     }
 

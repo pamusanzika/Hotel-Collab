@@ -116,7 +116,7 @@ const InfluencersListing = () => {
         const { data } = await api.get('/influencer-listing');
         setInfluencers(data.influencers);
       } catch (err) {
-        setError('Failed to load influencers.');
+        setError('Failed to load content creators.');
       } finally {
         setLoading(false);
       }
@@ -134,12 +134,12 @@ const InfluencersListing = () => {
     );
   }, [influencers, search]);
 
-  if (loading) return <LoadingState>Loading influencers...</LoadingState>;
+  if (loading) return <LoadingState>Loading content creators...</LoadingState>;
   if (error) return <ErrorState>{error}</ErrorState>;
 
   return (
     <>
-      <PageHeader title="Influencers" subtitle="Browse all registered influencers" />
+      <PageHeader title="Content Creators" subtitle="Browse all registered content creators" />
 
       <SearchBar>
         <SearchInput
@@ -152,7 +152,7 @@ const InfluencersListing = () => {
 
       {filtered.length === 0 ? (
         <EmptyState>
-          {search ? 'No influencers match your search.' : 'No influencers available at the moment.'}
+          {search ? 'No content creators match your search.' : 'No content creators available at the moment.'}
         </EmptyState>
       ) : (
         <Grid>
@@ -170,7 +170,7 @@ const InfluencersListing = () => {
               )}
 
               <CardBody>
-                <InfluencerName>{inf.displayName || 'Unnamed Influencer'}</InfluencerName>
+                <InfluencerName>{inf.displayName || 'Unnamed Content Creator'}</InfluencerName>
                 <NicheText>{inf.niche || 'Type not specified'}</NicheText>
               </CardBody>
             </InfluencerCard>

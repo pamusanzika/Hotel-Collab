@@ -150,7 +150,7 @@ const AdminUsers = () => {
             $size="sm"
             onClick={() => setFilter('influencer')}
           >
-            Influencers
+            Content Creators
           </FilterBtn>
         </Filters>
         <SearchInput

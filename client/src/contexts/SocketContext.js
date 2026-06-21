@@ -9,12 +9,14 @@ const SOCKET_URL =
   process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5001';
 
 export const SocketProvider = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [socket, setSocket] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const socketRef = useRef(null);
 
   useEffect(() => {
+    if (loading) return;
+
     if (!user) {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -40,11 +42,11 @@ export const SocketProvider = ({ children }) => {
       newSocket.disconnect();
       socketRef.current = null;
     };
-  }, [user]);
+  }, [user, loading]);
 
   // Fetch initial unread count
   useEffect(() => {
-    if (!user) return;
+    if (loading || !user || !['hotel_owner', 'influencer'].includes(user.role)) return;
     api
       .get('/chat/unread-count')
       .then(({ data }) => setUnreadCount(data.unreadCount))

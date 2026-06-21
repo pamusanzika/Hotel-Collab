@@ -419,7 +419,7 @@ const AdminUserPreview = () => {
       {/* Influencer Profile */}
       {user.role === 'influencer' && influencerProfile && (
         <Section>
-          <SectionTitle>Influencer Profile</SectionTitle>
+          <SectionTitle>Content Creator Profile</SectionTitle>
           <Card>
             <ProfileHeader>
               <Avatar>

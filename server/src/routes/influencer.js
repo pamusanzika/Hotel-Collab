@@ -27,11 +27,39 @@ const upload = multer({
   },
 });
 
+// Portfolio upload config
+const portfolioStorage = multer.diskStorage({
+  destination: path.join(__dirname, '../../uploads/portfolios'),
+  filename: (req, file, cb) => {
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, `${unique}${path.extname(file.originalname)}`);
+  },
+});
+
+const portfolioUpload = multer({
+  storage: portfolioStorage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|webp|gif|mp4|mov|avi|webm|pdf/;
+    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+    const allowedMimes = [
+      'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+      'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm',
+      'application/pdf',
+    ];
+    const mime = allowedMimes.includes(file.mimetype);
+    cb(ext && mime ? null : new Error('Unsupported file type'), ext && mime);
+  },
+});
+
 router.use(authenticate, roleGuard('influencer'));
 
 router.get('/profile', influencer.getProfile);
 router.put('/profile', influencer.updateProfile);
 router.post('/avatar', upload.single('avatar'), influencer.uploadAvatar);
 router.delete('/avatar', influencer.deleteAvatar);
+router.post('/portfolio', portfolioUpload.array('files', 10), influencer.uploadPortfolio);
+router.delete('/portfolio/:itemId', influencer.deletePortfolioItem);
+router.put('/portfolio/:itemId', influencer.updatePortfolioItem);
 
 module.exports = router;

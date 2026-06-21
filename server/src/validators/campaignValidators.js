@@ -9,6 +9,7 @@ const createCampaignSchema = z
     description: z.string().max(2000).optional().default(''),
     startDate: z.string().min(1, 'startDate is required'),
     endDate: z.string().min(1, 'endDate is required'),
+    amount: z.number().positive('Amount must be positive').optional(),
   })
   .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
     message: 'endDate must be after startDate',

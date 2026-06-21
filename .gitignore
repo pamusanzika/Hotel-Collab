@@ -26,5 +26,5 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Claude memory
-MEMORY.md
+# Markdown documentation files
+*.md

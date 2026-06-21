@@ -25,5 +25,11 @@ router.delete('/admins/:id', admin.removeAdmin);
 
 router.get('/campaigns', admin.listCampaigns);
 router.get('/campaigns/:id', admin.getCampaignById);
+router.get('/payments', admin.listPayments);
+
+router.get('/opportunities', admin.listOpportunities);
+router.get('/opportunities/:id', admin.getOpportunityById);
+router.post('/opportunities/:id/ban', admin.banOpportunity);
+router.post('/opportunities/:id/unban', admin.unbanOpportunity);
 
 module.exports = router;

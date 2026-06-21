@@ -304,7 +304,7 @@ const ChatPanel = ({ conversationId, otherUser }) => {
           <div>
             <HeaderName>{otherUser.name}</HeaderName>
             <HeaderRole>
-              {otherUser.role === 'hotel_owner' ? 'Hotel Owner' : 'Influencer'}
+              {otherUser.role === 'hotel_owner' ? 'Hotel Owner' : 'Content Creator'}
             </HeaderRole>
           </div>
         </ChatHeader>
@@ -330,7 +330,7 @@ const ChatPanel = ({ conversationId, otherUser }) => {
 
           // Determine sender role: use senderRole from server, fallback to client-side logic
           const role = msg.senderRole || (mine ? user.role : otherUser?.role) || '';
-          const bubbleColor = role === 'hotel_owner' ? '#6366F1' : '#14B8A6';
+          const bubbleColor = role === 'hotel_owner' ? '#6366F1' : '#F97316';
 
           return (
             <React.Fragment key={msg._id}>

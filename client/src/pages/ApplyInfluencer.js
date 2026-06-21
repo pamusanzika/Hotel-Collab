@@ -111,7 +111,7 @@ const ApplyInfluencer = () => {
               </SuccessMsg>
             ) : (
               <>
-                <Title>Influencer Signup</Title>
+                <Title>Content Creator Signup</Title>
                 <Subtitle>Create your account, then link platforms after verification</Subtitle>
                 <Form onSubmit={onSubmit}>
                   <InputWrapper>

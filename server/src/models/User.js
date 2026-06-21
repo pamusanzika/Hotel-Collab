@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
     },
     isEmailVerified: { type: Boolean, default: false },
     refreshToken: { type: String, default: null },
+    stripeCustomerId: { type: String, default: null },
   },
   { timestamps: true }
 );

@@ -4,24 +4,50 @@ const User = require('../models/User');
 const BanLog = require('../models/BanLog');
 const AdminInviteToken = require('../models/AdminInviteToken');
 const Campaign = require('../models/Campaign');
+const Payment = require('../models/Payment');
 const InfluencerProfile = require('../models/InfluencerProfile');
 const Hotel = require('../models/Hotel');
 const HotelOwnerProfile = require('../models/HotelOwnerProfile');
 const Review = require('../models/Review');
+const CollabOpportunity = require('../models/CollabOpportunity');
 const { sendAdminInviteEmail } = require('../services/emailService');
 
 const SALT_ROUNDS = 12;
 
 exports.getStats = async (req, res) => {
   try {
-    const [total, hotelOwners, influencers, admins, banned] = await Promise.all([
+    const [
+      total, hotelOwners, influencers, admins, banned,
+      totalCampaigns, pendingCampaigns, ongoingCampaigns, doneCampaigns,
+      totalPayments, paymentRevenue,
+      totalOpportunities, openOpportunities, bannedOpportunities,
+    ] = await Promise.all([
       User.countDocuments(),
       User.countDocuments({ role: 'hotel_owner' }),
       User.countDocuments({ role: 'influencer' }),
       User.countDocuments({ role: 'admin' }),
       User.countDocuments({ status: 'banned' }),
+      Campaign.countDocuments(),
+      Campaign.countDocuments({ status: 'pending' }),
+      Campaign.countDocuments({ status: { $in: ['upcoming', 'ongoing'] } }),
+      Campaign.countDocuments({ status: 'done' }),
+      Payment.countDocuments({ status: 'succeeded' }),
+      Payment.aggregate([
+        { $match: { status: 'succeeded' } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
+      CollabOpportunity.countDocuments(),
+      CollabOpportunity.countDocuments({ status: 'open' }),
+      CollabOpportunity.countDocuments({ status: 'banned' }),
     ]);
-    res.json({ total, hotelOwners, influencers, admins, banned });
+
+    res.json({
+      total, hotelOwners, influencers, admins, banned,
+      totalCampaigns, pendingCampaigns, ongoingCampaigns, doneCampaigns,
+      totalPayments,
+      totalRevenue: paymentRevenue[0]?.total || 0,
+      totalOpportunities, openOpportunities, bannedOpportunities,
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
@@ -374,9 +400,146 @@ exports.getCampaignById = async (req, res) => {
       obj.influencerLocation = profile.location;
     }
 
+    // Attach payment info
+    const payment = await Payment.findOne({ campaignId: campaign._id })
+      .sort({ createdAt: -1 })
+      .select('amount currency status stripePaymentIntentId refundId createdAt updatedAt')
+      .lean();
+    obj.payment = payment || null;
+
+    // Attach reviews
+    const reviews = await Review.find({ campaignId: campaign._id })
+      .populate('reviewerId', 'name role')
+      .lean();
+    obj.reviews = reviews;
+
     res.json({ campaign: obj });
   } catch (err) {
     console.error('Admin get campaign error:', err);
     res.status(500).json({ error: 'Failed to fetch campaign' });
+  }
+};
+
+exports.listPayments = async (req, res) => {
+  try {
+    const { status, page = 1, limit = 20 } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+
+    const [payments, total] = await Promise.all([
+      Payment.find(filter)
+        .populate('campaignId', 'title campaignType status')
+        .populate('payerId', 'name email')
+        .populate('recipientId', 'name email')
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+        .lean(),
+      Payment.countDocuments(filter),
+    ]);
+
+    res.json({ payments, total, page: Number(page), limit: Number(limit) });
+  } catch (err) {
+    console.error('Admin list payments error:', err);
+    res.status(500).json({ error: 'Failed to fetch payments' });
+  }
+};
+
+exports.listOpportunities = async (req, res) => {
+  try {
+    const { status, search, page = 1, limit = 20 } = req.query;
+
+    const filter = {};
+    if (status) filter.status = status;
+
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      filter.$or = [{ title: regex }, { description: regex }];
+    }
+
+    const [opportunities, total] = await Promise.all([
+      CollabOpportunity.find(filter)
+        .populate('hotelId', 'name city featureImage location')
+        .populate('createdBy', 'name email')
+        .populate('bannedBy', 'name')
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(Number(limit)),
+      CollabOpportunity.countDocuments(filter),
+    ]);
+
+    res.json({ opportunities, total, page: Number(page), limit: Number(limit) });
+  } catch (err) {
+    console.error('Admin list opportunities error:', err);
+    res.status(500).json({ error: 'Failed to fetch opportunities' });
+  }
+};
+
+exports.getOpportunityById = async (req, res) => {
+  try {
+    const opportunity = await CollabOpportunity.findById(req.params.id)
+      .populate('hotelId', 'name city featureImage location starRating')
+      .populate('createdBy', 'name email')
+      .populate('bannedBy', 'name')
+      .populate('applicants.userId', 'name email');
+
+    if (!opportunity) return res.status(404).json({ error: 'Opportunity not found' });
+
+    const obj = opportunity.toObject();
+
+    const enrichedApplicants = await Promise.all(
+      obj.applicants.map(async (a) => {
+        const profile = await InfluencerProfile.findOne({ userId: a.userId?._id })
+          .select('displayName avatar niche location');
+        return { ...a, influencerProfile: profile || null };
+      })
+    );
+    obj.applicants = enrichedApplicants;
+
+    res.json({ opportunity: obj });
+  } catch (err) {
+    console.error('Admin get opportunity error:', err);
+    res.status(500).json({ error: 'Failed to fetch opportunity' });
+  }
+};
+
+exports.banOpportunity = async (req, res) => {
+  try {
+    const { reason } = req.body;
+    const opportunity = await CollabOpportunity.findById(req.params.id);
+    if (!opportunity) return res.status(404).json({ error: 'Opportunity not found' });
+    if (opportunity.status === 'banned') {
+      return res.status(400).json({ error: 'Opportunity is already banned' });
+    }
+
+    opportunity.status = 'banned';
+    opportunity.banReason = reason || '';
+    opportunity.bannedBy = req.user._id;
+    await opportunity.save();
+
+    res.json({ message: 'Opportunity banned', opportunityId: opportunity._id });
+  } catch (err) {
+    console.error('Admin ban opportunity error:', err);
+    res.status(500).json({ error: 'Failed to ban opportunity' });
+  }
+};
+
+exports.unbanOpportunity = async (req, res) => {
+  try {
+    const opportunity = await CollabOpportunity.findById(req.params.id);
+    if (!opportunity) return res.status(404).json({ error: 'Opportunity not found' });
+    if (opportunity.status !== 'banned') {
+      return res.status(400).json({ error: 'Opportunity is not banned' });
+    }
+
+    opportunity.status = 'open';
+    opportunity.banReason = '';
+    opportunity.bannedBy = null;
+    await opportunity.save();
+
+    res.json({ message: 'Opportunity unbanned', opportunityId: opportunity._id });
+  } catch (err) {
+    console.error('Admin unban opportunity error:', err);
+    res.status(500).json({ error: 'Failed to unban opportunity' });
   }
 };

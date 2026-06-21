@@ -21,23 +21,23 @@ exports.listAll = async (req, res) => {
     }
 
     const profiles = await InfluencerProfile.find(filter)
-      .select('userId displayName bio niche location avatar collaborationTypes linkedPlatforms')
+      .select('userId displayName bio niche location avatar collaborationTypes linkedPlatforms portfolio')
       .sort({ createdAt: -1 });
 
     res.json({ influencers: profiles });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch influencers' });
+    res.status(500).json({ error: 'Failed to fetch content creators' });
   }
 };
 
 exports.getById = async (req, res) => {
   try {
     const profile = await InfluencerProfile.findById(req.params.id);
-    if (!profile) return res.status(404).json({ error: 'Influencer not found' });
+    if (!profile) return res.status(404).json({ error: 'Content Creator not found' });
 
     const user = await User.findById(profile.userId).select('name email status');
     if (!user || user.status !== 'active') {
-      return res.status(404).json({ error: 'Influencer not found' });
+      return res.status(404).json({ error: 'Content Creator not found' });
     }
 
     res.json({
@@ -48,6 +48,6 @@ exports.getById = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch influencer details' });
+    res.status(500).json({ error: 'Failed to fetch content creator details' });
   }
 };

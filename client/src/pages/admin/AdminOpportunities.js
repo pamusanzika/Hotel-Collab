@@ -34,12 +34,8 @@ const SearchInput = styled.input`
   width: 100%;
   max-width: 320px;
   outline: none;
-  &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
+  &:focus { border-color: ${({ theme }) => theme.colors.primary}; }
+  &::placeholder { color: ${({ theme }) => theme.colors.textSecondary}; }
 `;
 
 const Table = styled.table`
@@ -69,35 +65,25 @@ const TypeLabel = styled.span`
   text-transform: capitalize;
 `;
 
-const STATUS_VARIANT = {
-  pending: 'pending',
-  upcoming: 'info',
-  ongoing: 'active',
-  done: 'active',
-  cancelled: 'banned',
-  rejected: 'banned',
+const STATUS_VARIANT = { open: 'active', closed: 'pending', banned: 'banned' };
+const STATUS_LABEL = { open: 'Open', closed: 'Closed', banned: 'Banned' };
+
+const EVENT_LABEL = {
+  grand_opening: 'Grand Opening', seasonal_event: 'Seasonal Event', festival: 'Festival',
+  product_launch: 'Product Launch', anniversary: 'Anniversary', holiday_special: 'Holiday Special',
+  food_wine: 'Food & Wine', wellness_retreat: 'Wellness Retreat', other: 'Other',
 };
 
-const STATUS_LABEL = {
-  pending: 'Pending',
-  upcoming: 'Upcoming',
-  ongoing: 'Ongoing',
-  done: 'Completed',
-  cancelled: 'Cancelled',
-  rejected: 'Rejected',
+const COMP_LABEL = {
+  free_stay: 'Free Stay', paid: 'Paid', commission: 'Commission',
+  discount_stay: 'Discount Stay', mixed: 'Mixed',
 };
 
-const TYPE_LABEL = {
-  free_stay: 'Free Stay',
-  paid_collaboration: 'Paid Collaboration',
-  discount_stay: 'Discount Stay',
-};
+const STATUSES = ['', 'open', 'closed', 'banned'];
 
-const STATUSES = ['', 'pending', 'upcoming', 'ongoing', 'done', 'cancelled', 'rejected'];
-
-const AdminCollaborations = () => {
+const AdminOpportunities = () => {
   const navigate = useNavigate();
-  const [campaigns, setCampaigns] = useState([]);
+  const [opportunities, setOpportunities] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -108,14 +94,14 @@ const AdminCollaborations = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const fetchCampaigns = useCallback(async () => {
+  const fetchOpportunities = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
       if (statusFilter) params.status = statusFilter;
       if (debouncedSearch) params.search = debouncedSearch;
-      const { data } = await api.get('/admin/campaigns', { params });
-      setCampaigns(data.campaigns);
+      const { data } = await api.get('/admin/opportunities', { params });
+      setOpportunities(data.opportunities);
     } catch (err) {
       console.error(err);
     } finally {
@@ -123,13 +109,11 @@ const AdminCollaborations = () => {
     }
   }, [statusFilter, debouncedSearch]);
 
-  useEffect(() => {
-    fetchCampaigns();
-  }, [fetchCampaigns]);
+  useEffect(() => { fetchOpportunities(); }, [fetchOpportunities]);
 
   return (
     <>
-      <PageHeader title="Collaborations" subtitle="View all platform collaborations" />
+      <PageHeader title="Collab Opportunities" subtitle="View and moderate event collaboration listings" />
 
       <ToolbarRow>
         <Filters>
@@ -146,7 +130,7 @@ const AdminCollaborations = () => {
         </Filters>
         <SearchInput
           type="text"
-          placeholder="Search by title, hotel, or influencer..."
+          placeholder="Search by title or description..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -158,64 +142,43 @@ const AdminCollaborations = () => {
             <tr>
               <Th>Title</Th>
               <Th>Hotel</Th>
-              <Th>Content Creator</Th>
-              <Th>Type</Th>
+              <Th>Event Type</Th>
+              <Th>Compensation</Th>
+              <Th>Deadline</Th>
+              <Th>Applicants</Th>
               <Th>Status</Th>
-              <Th>Payment</Th>
-              <Th>Created</Th>
               <Th>Actions</Th>
             </tr>
           </thead>
           <tbody>
-            {campaigns.map((c) => (
-              <tr key={c._id}>
-                <Td>{c.title}</Td>
-                <Td>{c.hotelId?.name || 'N/A'}</Td>
-                <Td>{c.influencerDisplayName || c.influencerId?.name || 'N/A'}</Td>
+            {opportunities.map((o) => (
+              <tr key={o._id}>
+                <Td>{o.title}</Td>
+                <Td>{o.hotelId?.name || 'N/A'}</Td>
+                <Td><TypeLabel>{EVENT_LABEL[o.eventType] || o.eventType}</TypeLabel></Td>
+                <Td><TypeLabel>{COMP_LABEL[o.compensationType] || o.compensationType}</TypeLabel></Td>
+                <Td>{new Date(o.applicationDeadline).toLocaleDateString()}</Td>
+                <Td>{o.applicants?.length || 0}</Td>
                 <Td>
-                  <TypeLabel>{TYPE_LABEL[c.campaignType] || c.campaignType}</TypeLabel>
-                </Td>
-                <Td>
-                  <Badge $variant={STATUS_VARIANT[c.status]}>
-                    {STATUS_LABEL[c.status] || c.status}
+                  <Badge $variant={STATUS_VARIANT[o.status]}>
+                    {STATUS_LABEL[o.status] || o.status}
                   </Badge>
                 </Td>
-                <Td>
-                  {c.campaignType === 'paid_collaboration' && c.amount > 0 ? (
-                    <>
-                      <span style={{ fontWeight: 600 }}>${c.amount.toFixed(2)}</span>
-                      <br />
-                      <Badge $variant={
-                        c.paymentStatus === 'paid' ? 'active' :
-                        c.paymentStatus === 'refunded' ? 'banned' :
-                        c.paymentStatus === 'failed' ? 'banned' : 'pending'
-                      } style={{ fontSize: '0.65rem', marginTop: '2px' }}>
-                        {c.paymentStatus === 'not_required' ? '—' :
-                         c.paymentStatus === 'paid' ? 'Paid' :
-                         c.paymentStatus === 'refunded' ? 'Refunded' :
-                         c.paymentStatus === 'failed' ? 'Failed' : 'Pending'}
-                      </Badge>
-                    </>
-                  ) : (
-                    <TypeLabel>—</TypeLabel>
-                  )}
-                </Td>
-                <Td>{new Date(c.createdAt).toLocaleDateString()}</Td>
                 <Td>
                   <Button
                     $variant="ghost"
                     $size="sm"
-                    onClick={() => navigate(`/admin/collaborations/${c._id}`)}
+                    onClick={() => navigate(`/admin/opportunities/${o._id}`)}
                   >
                     View
                   </Button>
                 </Td>
               </tr>
             ))}
-            {campaigns.length === 0 && (
+            {opportunities.length === 0 && (
               <tr>
                 <Td colSpan={8} style={{ textAlign: 'center', padding: '2rem' }}>
-                  {loading ? 'Loading...' : 'No collaborations found'}
+                  {loading ? 'Loading...' : 'No opportunities found'}
                 </Td>
               </tr>
             )}
@@ -226,4 +189,4 @@ const AdminCollaborations = () => {
   );
 };
 
-export default AdminCollaborations;
+export default AdminOpportunities;

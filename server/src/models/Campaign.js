@@ -56,6 +56,21 @@ const campaignSchema = new mongoose.Schema(
       maxlength: 500,
       default: '',
     },
+    amount: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['not_required', 'pending', 'requires_payment', 'processing', 'paid', 'refunded', 'failed'],
+      default: 'not_required',
+    },
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Payment',
+      default: null,
+    },
   },
   { timestamps: true }
 );
